@@ -1,0 +1,23 @@
+
+COMPILACIÓN (Módulo C)
+Para compilar el programa principal junto con todos sus módulos, ejecutar:
+
+gcc -Wall -Werror -g main.c funcionalidades.c parser.c utiles.c tablero.c -o othello
+
+EJECUCIÓN:
+
+Para evitar errores debidos al nombre de la carpeta general, siempre que se pase como argumento el path de un archivo, este debe ir entre comillas ""
+
+Módulo C:
+./othello "<archivo_entrada.txt>" <archivo_salida.txt>
+
+Módulo Python:
+python3 main.py "<archivo_tablero.txt>" <nivel_bot> <color_jugador_humano>
+
+TESTS
+Para compilar y ejecutar los tests en C:
+gcc test.c funcionalidades.c utiles.c tablero.c parser.c -o ejecutar_tests
+./ejecutar_tests
+
+Para ejecutar los tests en Python:
+pytest test.py

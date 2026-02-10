@@ -1,0 +1,73 @@
+PARTE EN C:
+
+Decidí representar los movimientos dados en el archivo en un array de 8x8, para tener una forma clara de representar las casillas.
+
+Manejo de archivos:
+
+Tuve que hallar una manera de asociar nombre con color, para lo cual definí el struct Jugadores, que tiene nombre, color del jugador y un bool que indica si hace el primer movimiento o no.
+Si el jugador hace la primera movida, ejecuta_primer_movimiento = 1 si no, 0.
+
+Para separar la string "(Nombre_jugador,Color_jugador)" a partir de la coma, use la función strtok de la libreria string.h
+
+Entonces, definí la función 'extractor_informacion_jugadores' que crea un array de 2 elementos, tal que el primer elemento es el struct
+con la información del primer jugador y el segundo contiene al struct con la información del jugador 2.
+La funcion retorna un puntero al array
+
+Luego, para la función que parsea los movimientos, definí cargar_movimientos, la cual abre el archivo, asigna un espacio de memoria y guarda las coordenadas en un array de structs Coordenada.
+Además, lleva la cuenta de la cantidad de movimientos hechos en la partida.
+
+Esta función lee strings de la forma A3,C4,B5 como decidí representar el tablero como matriz, usando aritmética ASCII, definí la función coordenada_a_numero.
+La cual asocia A -> 0, B -> 1, C -> 2, etc., para que las coordenadas concuerden con los índices del tablero.
+
+-----------
+
+Lógica volteo de piezas y legalidad de movimientos:
+
+Como está recomendado en la consigna del TP, para verificar si un movimiento es legal, cuento la cantidad de piezas que se voltean haciendo un movimiento.
+Si este número es 0, entonces el movimiento no es válido.
+Además de llevar el contador de piezas volteadas, en la misma función llevo la lista de las coordenadas en las que están las piezas que se voltearían.
+
+Necesité que la función tome el movimiento a intentar, el estado del tablero y el color del jugador al que le corresponde el turno.
+Entonces definí el struct ResultadoCaptura, que lleva un contador de piezas volteadas y además contiene al ya definido struct Coordenadas.
+
+Para chequear las 8 direcciones en donde posiblemente haya una captura, simbolizo las direcciones como versores.
+Creo un array de 8 versores que simbolizan las direcciones diagonales, verticales y horizontales de una matriz 2D.
+
+Para analizar todas las casillas en cierta dirección, uso un array temporal de coordenadas que almacena hasta 8 elementos, se itera por cada dirección y
+luego, si se halla una pieza del 'rival' contigua a una 'propia' o 'rival' en la dirección en la que se busque, esta será guardada en el array temporal.
+Si al revisar la dirección esta se cierra con una pieza propia (con al menos una captura), se copian las coordenadas de las piezas a voltear dentro de un struct ResultadoCaptura, el cual será devuelto por la función.
+
+Luego es fácil verificar qué movimientos son legales, ya que las columnas y filas tienen que estar entre 0 y 7, y si al intentar la movida el contador de obtener_piezas_a_voltear > 0, entonces el movimiento es válido.
+Aparte, para verificar si un jugador omite un turno legalmente, se verifica que en las casillas disponibles para mover el contador de obtener_piezas_a_voltear sea 0.
+
+------------
+
+Flujo main:
+
+En main hice un bucle while en el cual varía el turno, dependiendo de su paridad, le toca a cierto jugador.
+Se verifica la legalidad de cada movimiento y se printea el tablero en caso de que haya un movimiento ilegal, en caso contrario, se devuelve el tablero en un archivo.
+
+Si el número del turno es igual a la cantidad de movimientos hechos en toda la partida, no se hizo ningún movimiento ilegal y se crea el archivo con el estado del tablero.
+
+Si el tablero está lleno, se hace un conteo de las piezas, se printea el nombre del ganador y se muestra el estado final del tablero.
+
+-------
+
+PARTE PYTHON:
+
+Para tomar argumentos para el programa a través de la terminal use la libreria sys
+
+Para tener un acceso intuitivo a cada casilla, decidí representar el tablero como una lista de listas.
+La función que lee el archivo dado retorna una tupla con el tablero como lista de listas y el char que representa el color de quien tiene el primer movimiento.
+
+Para las funciones más importantes, como la que obtiene las piezas que se voltearían dado un movimiento, sigo la misma lógica que en el programa en C.
+Decidí hacerla casi exactamente igual, ya que la función, dado un movimiento, guarda una lista con todas las coordenadas que generan capturas, por lo que me sirve tanto para el jugador humano.
+Como para cuando juega la PC, ya que la PC nivel 0 debería ver la lista de coordenadas y elegir una aleatoria, y la PC nivel 1 debería elegir la lista más larga.
+
+Para validar la legalidad de las capturas, sigo la misma lógica que en C.
+
+Para optimizar la búsqueda de movimientos que puede hacer el bot, al recibir el tablero, el programa lo analiza y crea un set con todas las casillas vacías.
+Luego, después de cada movimiento legal hecho por el humano o el bot, la casilla que fue ocupada se elimina del set, haciendo que, cuanto más avanzada esté la partida, menos casillas deban ser analizadas.
+
+Entonces, el bot evalúa cada movimiento legal que esté en el set de casillas vacías. El bot nivel 0 elige aleatoriamente y el bot nivel 1, iterando sobre el set de casillas vacías, ejecuta la función que, dado un movimiento, devuelve la lista de piezas a voltear causadas por dicho movimiento este elige la lista más larga (si varias movidas generan la misma cantidad de movimientos, elige aleatoriamente).
+
